@@ -125,7 +125,8 @@ RISC-V Assembly Optimization: Developing hand-optimized assembly routines using 
 Energy Consumption Mapping: Measuring real-time micro-ampere consumption during continuous signing operations to model battery lifecycle impacts for remote IoT sensor deployments.
 
 👥 Authors & Contact
-Lead Researcher: Gonapa Shivateja 
+Lead Researcher: Dr. Amrutesh Bhat(Rv University)
+Co-Researcher  :Gonapa Shivateja 
 Mobile: (+91) 7331120167
 
 Developed as part of an intensive academic/industrial internship focused on Secure IoT in the Quantum Era.
