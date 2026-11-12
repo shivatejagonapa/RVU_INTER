@@ -294,3 +294,90 @@ Developed as part of an intensive academic/industrial internship focused on Secu
 
 📄 License & Usage
 This repository is curated strictly for academic research, verification, and educational purposes. For technical collaborations, data verification questions, or project inquiries, please reach out directly to the lead researcher using the contact information provided above.
+
+
+==========================================================================================================================================================================================================
+Revised PQC WITH G7(UPDATING  ON 12/11/2026 )
++==================================================================================================================+
+|                    1. EVOLUTION OF OUR WORK: BASELINE VS. REVISED PQC BENCHMARKING                               |
+|             Progression from Level-1 Generic C Baseline to Gate-G7 Compliant ML-KEM-768 Suite                    |
++========================+============================================+============================================+
+| Project Dimension      | Phase 1: Initial Baseline Suite            | Phase 2: Revised Gate-G7 Suite (Final)     |
++------------------------+--------------------------------------------+--------------------------------------------+
+| Target Algorithms      | NIST Level 1 Suite:                        | NIST Level 3 Standard:                     |
+|                        | ML-KEM-512, ML-DSA-44, FN-DSA-512          | ML-KEM-768 (Kyber-768)                     |
++------------------------+--------------------------------------------+--------------------------------------------+
+| Crypto Libraries       | Generic C / PQClean & fn-dsa baselines     | Arm: pqm4 (Hand-tuned Assembly)            |
+|                        |                                            | RISC-V: mlkem-native (C + Inline B-Ext)    |
++------------------------+--------------------------------------------+--------------------------------------------+
+| RISC-V ISA Profile     | Base rv32imac (Standard Integer)           | Bit-Manipulation                           |
+|                        |                                            | (rv32ima_zba_zbb_zbs_zbkb_zcmp)            |
++------------------------+--------------------------------------------+--------------------------------------------+
+| Statistical Metric     | Arithmetic Mean (1,000 runs, 10 warmup)    | Strict Median (1,000 runs, 10 warmup+KATs) |
++------------------------+--------------------------------------------+--------------------------------------------+
+| Memory & Size          | Execution cycles & latency only            | Full Peak Stack (Canary), 0B Heap, &       |
+| Profiling              |                                            | Flash Code Size                            |
++------------------------+--------------------------------------------+--------------------------------------------+
+| RNG & Validation       | Standard randombytes.c                     | Hardware RP2350 TRNG + HMAC-DRBG-SHA256    |
+|                        |                                            | (0 failures)                               |
++------------------------+--------------------------------------------+--------------------------------------------+
+| ARM Cortex-M33 Latency | ML-KEM-512 Total:                          | ML-KEM-768 Total:                          |
+|                        | 17.23 ms (2,583,750 cycles)                | 21.10 ms (3,166,332 cycles)                |
++------------------------+--------------------------------------------+--------------------------------------------+
+| Hazard3 RISC-V Latency | ML-KEM-512 Total:                          | ML-KEM-768 Total:                          |
+|                        | 19.16 ms (2,874,000 cycles)                | 26.56 ms (3,983,479 cycles)                |
++==================================================================================================================+
+
+
+2. Final Consolidated Gate-G7 Output Box (ML-KEM-768 @ 150 MHz)
++====================================================================================================+
+|                      FINAL GATE-G7 HARDWARE BENCHMARK SUMMARY (RP2350 @ 150 MHz)                   |
+|                Raspberry Pi Pico 2 W | XIP Flash Placement | 1,000 Iterations per Op              |
++========================+==================+===============+==============+============+============+
+| Target Core / Library  | Operation        | Median Cycles | Time (ms)    | Peak Stack | Code Size  |
++------------------------+------------------+---------------+--------------+------------+------------+
+| ARM Cortex-M33         | Keypair Gen      | 1,068,438.0   | 7.12 ms      | 5,628 B    | ~5.2 KB    |
+| (pqm4 / Armv8-M DSP)   | Encapsulation    | 1,035,463.0   | 6.90 ms      | 6,692 B    | ~5.2 KB    |
+|                        | Decapsulation    | 1,062,431.0   | 7.08 ms      | 6,676 B    | ~5.2 KB    |
+|                        | FULL HANDSHAKE   | 3,166,332.0   | 21.10 ms     | 6,692 B    | ~5.2 KB    |
++------------------------+------------------+---------------+--------------+------------+------------+
+| Hazard3 RISC-V         | Keypair Gen      | 1,224,252.0   | 8.16 ms      | 14,176 B   | ~9.8 KB    |
+| (mlkem-native / B-Ext) | Encapsulation    | 1,287,246.0   | 8.58 ms      | 17,360 B   | ~9.8 KB    |
+|                        | Decapsulation    | 1,471,981.0   | 9.81 ms      | 18,400 B   | ~9.8 KB    |
+|                        | FULL HANDSHAKE   | 3,983,479.0   | 26.56 ms     | 18,400 B   | ~9.8 KB    |
++========================+==================+===============+==============+============+============+
+| DELTA (ARM vs RISC-V)  | ARM Advantage    | -20.5% Cycles | -5.46 ms     | -63.6% RAM | -46.9% ROM |
+| VERIFICATION STATUS    | KATs: 100% Pass  | TRNG Faults: 0| Heap: 0 B    | Canaries: OK (Both Cores)  |
++====================================================================================================+
+
+3. Revised PQC Research & Implementation Architecture Tree
+Revised_PQC_RP2350_Framework/
+├── 1_Theoretical_&_Standards_Upgrade/
+│   ├── Quantum_Threat_Model (Shor's & Grover's Impact on Edge IoT)
+│   ├── Security_Level_Elevation (Upgraded from NIST Level 1 -> NIST Level 3 / ML-KEM-768)
+│   └── Algorithm_Scope_Refinement
+│       ├── Phase_1_Broad_Survey (ML-KEM-512, ML-DSA-44, FN-DSA-512 FPU bottleneck analysis)
+│       └── Phase_2_Deep_Optimization (Dedicated FIPS 203 ML-KEM-768 Lattice KEM focus)
+│
+├── 2_Silicon_&_ISA_Co_Design (RP2350 @ 150 MHz, XIP Flash)/
+│   ├── Core_0_ARM_Cortex_M33/
+│   │   ├── Library: pqm4 (Hand-optimized Armv8-M DSP & Thumb-2 assembly)
+│   │   └── Efficiency: Ultra-low stack footprint (6.69 KB) & compact Flash (.text ~5.2 KB)
+│   └── Core_1_Hazard3_RISC_V/
+│       ├── Library: mlkem-native (Portable C with inline assembly hooks)
+│       └── ISA_Upgrade: rv32imac -> rv32ima_zba_zbb_zbs_zbkb_zca_zcb_zcmp (Bit-Manipulation)
+│
+├── 3_Gate_G7_Hardware_Verification_Pipeline/
+│   ├── Entropy_&_Correctness/
+│   │   ├── Hardware_TRNG -> HMAC-DRBG-SHA256 (0 reseeds, 0 TRNG failures)
+│   │   └── Pre-Run Known Answer Tests (3 KAT rounds verified via SHA-256 hash match)
+│   ├── Precision_Telemetry/
+│   │   ├── 10 Warmup Rounds + 1,000 Timed Iterations (Median statistical extraction)
+│   │   └── Stack Canary Painting (Zero heap allocation: arena=0, inuse=0)
+│   └── Host_Automation_Tooling/
+│       └── parse_bench.py (USB-CDC handshake trigger, regex cycle extraction, Excel/PDF reporting)
+│
+└── 4_Key_Empirical_Findings/
+    ├── Compute_Latency: ARM Cortex-M33 outperforms Hazard3 RISC-V by ~20.5% (21.10 ms vs 26.56 ms)
+    ├── SRAM_Footprint: ARM pqm4 uses 63.6% less peak stack than mlkem-native (6.69 KB vs 18.40 KB)
+    └── Flash_Density: Thumb-2 assembly reduces cryptographic code size by 46.9% (5.2 KB vs 9.8 KB)
